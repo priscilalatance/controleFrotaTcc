@@ -2,25 +2,35 @@ package model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "usuarios")
 public class Usuario implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Integer id;
-	private String nome;
+    @Column(name = "re")
 	private String re;
-	private Integer telefone;
+    @Column(name = "nome")
+	private String nome;
+    @Column(name = "telefone")
+	private String telefone;
+    @Column(name = "cpf")
 	private String cpf;
+    @Column(name = "endereco")
 	private String endereco;
+    @Column(name = "email")
 	private String email;
+    @Column(name = "senha")
 	private String senha;
+    @Column(name = "inativarUsuario")
 	private Boolean inativarUsuario;
 	
 
@@ -29,10 +39,10 @@ public class Usuario implements Serializable{
 
 	}
 
-	public Usuario(Integer id, String nome, String re, Integer telefone, String cpf, String endereco, String email,
+	public Usuario(String nome, String re, String telefone, String cpf, String endereco, String email,
 			String senha, Boolean inativarUsuario) {
 		super();
-		this.id = id;
+
 		this.nome = nome;
 		this.re = re;
 		this.telefone = telefone;
@@ -41,10 +51,6 @@ public class Usuario implements Serializable{
 		this.email = email;
 		this.senha = senha;
 		this.inativarUsuario = inativarUsuario;
-	}
-
-	public Integer getId() {
-		return id;
 	}
 
 	public String getNome() {
@@ -63,11 +69,11 @@ public class Usuario implements Serializable{
 		this.re = re;
 	}
 
-	public Integer getTelefone() {
+	public String getTelefone() {
 		return telefone;
 	}
 
-	public void setTelefone(Integer telefone) {
+	public void setTelefone(String telefone) {
 		this.telefone = telefone;
 	}
 
