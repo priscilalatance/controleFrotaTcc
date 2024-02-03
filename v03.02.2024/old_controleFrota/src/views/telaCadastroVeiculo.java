@@ -5,7 +5,6 @@
  */
 package views;
 
-
 import config.UsuariosDao;
 import config.Veiculos;
 import config.VeiculosDao;
@@ -26,10 +25,10 @@ import java.util.logging.Logger;
  * @author mariana
  */
 public class telaCadastroVeiculo extends javax.swing.JFrame {
-    
+
     DateTimeFormatter formatoEntradaBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     DateTimeFormatter formatoSaidaAmericano = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    
+
     public telaCadastroVeiculo() {
         initComponents();
     }
@@ -340,7 +339,7 @@ public class telaCadastroVeiculo extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-        void limparCampos() {
+    void limparCampos() {
         txtAnoFabricacao.setText("");
         txtAnoModelo.setText("");
         txtChassi.setText("");
@@ -360,7 +359,7 @@ public class telaCadastroVeiculo extends javax.swing.JFrame {
         jCheckBoxInativarVeiculo.setSelected(false);
 
     }
-        
+
     private void txtCorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCorKeyReleased
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCorKeyReleased
@@ -419,52 +418,61 @@ public class telaCadastroVeiculo extends javax.swing.JFrame {
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
         // TODO add your handling code here:
-        VeiculosDao dao = new VeiculosDao();
-        boolean status;
-        int resp; 
-        Veiculos veiculos = new Veiculos();
-        
-        veiculos.setPlaca(txtPlaca.getText());
-        System.out.print(veiculos.getPlaca());
-        veiculos.setAnoFabricacao(Integer.parseInt(txtAnoFabricacao.getText()));
-        veiculos.setAnoModelo(Integer.parseInt(txtAnoModelo.getText()));
-        veiculos.setChassi(txtChassi.getText());
-        veiculos.setCombustivel(txtCombustivel.getText());
-        veiculos.setCor(txtCor.getText());
-        veiculos.setCrv(txtNumCRV.getText());     
-        veiculos.setDataCadastro(LocalDate.parse(txtDataCadastro.getText(), formatoEntradaBrasileiro));
-        veiculos.setDataCompra(LocalDate.parse(txtDataCompra.getText(), formatoEntradaBrasileiro));
-        veiculos.setVencimentoGarantia(LocalDate.parse(txtVencGarantia.getText(), formatoEntradaBrasileiro));
-        veiculos.setKmAtual(Integer.parseInt(txtKmAtual.getText()));
-        veiculos.setMarca(txtMarca.getText());
-        veiculos.setModelo(txtModelo.getText());
-        veiculos.setMotor(txtMotor.getText());
-        veiculos.setRenavam(txtRenavam.getText());
-        veiculos.setTipoVeiculo(txtTipoVeiculo.getText());
-        veiculos.setInativarVeiculo(jCheckBoxInativarVeiculo.isSelected());         
-
-        status = dao.conectar();
-        if (!status) {
-            JOptionPane.showMessageDialog(null, "Erro na conexão com Banco do Dados");
+        if (txtPlaca.getText().isEmpty() || txtAnoFabricacao.getText().isEmpty() || txtAnoModelo.getText().isEmpty() || txtChassi.getText().isEmpty()
+                || txtCombustivel.getText().isEmpty() || txtCor.getText().isEmpty() || txtNumCRV.getText().isEmpty() || txtDataCadastro.getText().isEmpty()
+                || txtDataCompra.getText().isEmpty() || txtVencGarantia.getText().isEmpty() || txtKmAtual.getText().isEmpty() || txtMarca.getText().isEmpty()
+                || txtModelo.getText().isEmpty() || txtMotor.getText().isEmpty() || txtRenavam.getText().isEmpty() || txtTipoVeiculo.getText().isEmpty()) {
+            
+            JOptionPane.showMessageDialog(null, "Todos os campos devem ser preenchidos para o veículo ser cadastrado.");
+            
         } else {
-            resp = dao.salvar(veiculos);
-            if (resp == 1) {
-                JOptionPane.showMessageDialog(null, "Dados inseridos com sucesso!!!");
-                limparCampos();
-                txtPlaca.requestFocus();
-            } else if (resp == 1062) {
-                txtPlaca.requestFocus();
-                JOptionPane.showMessageDialog(null, "Numero do placa já cadastrado");
 
+            VeiculosDao dao = new VeiculosDao();
+            boolean status;
+            int resp;
+            Veiculos veiculos = new Veiculos();
+
+            veiculos.setPlaca(txtPlaca.getText());
+            veiculos.setAnoFabricacao(Integer.parseInt(txtAnoFabricacao.getText()));
+            veiculos.setAnoModelo(Integer.parseInt(txtAnoModelo.getText()));
+            veiculos.setChassi(txtChassi.getText());
+            veiculos.setCombustivel(txtCombustivel.getText());
+            veiculos.setCor(txtCor.getText());
+            veiculos.setCrv(txtNumCRV.getText());
+            veiculos.setDataCadastro(LocalDate.parse(txtDataCadastro.getText(), formatoEntradaBrasileiro));
+            veiculos.setDataCompra(LocalDate.parse(txtDataCompra.getText(), formatoEntradaBrasileiro));
+            veiculos.setVencimentoGarantia(LocalDate.parse(txtVencGarantia.getText(), formatoEntradaBrasileiro));
+            veiculos.setKmAtual(Integer.parseInt(txtKmAtual.getText()));
+            veiculos.setMarca(txtMarca.getText());
+            veiculos.setModelo(txtModelo.getText());
+            veiculos.setMotor(txtMotor.getText());
+            veiculos.setRenavam(txtRenavam.getText());
+            veiculos.setTipoVeiculo(txtTipoVeiculo.getText());
+            veiculos.setInativarVeiculo(jCheckBoxInativarVeiculo.isSelected());
+
+            status = dao.conectar();
+            if (!status) {
+                JOptionPane.showMessageDialog(null, "Erro na conexão com Banco do Dados.");
             } else {
-                JOptionPane.showMessageDialog(null, "Erro ao salvar!!!");
+                resp = dao.salvar(veiculos);
+                if (resp == 1) {
+                    JOptionPane.showMessageDialog(null, "Dados inseridos com sucesso!!!");
+                    limparCampos();
+                    txtPlaca.requestFocus();
+                } else if (resp == 1062) {
+                    txtPlaca.requestFocus();
+                    JOptionPane.showMessageDialog(null, "Numero do placa já cadastrado");
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Erro ao salvar!!!");
+
+                }
+
+                dao.desconectar();
 
             }
-
-            dao.desconectar();
-
         }
-            
+
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void btnMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuActionPerformed
@@ -475,101 +483,126 @@ public class telaCadastroVeiculo extends javax.swing.JFrame {
 
     private void btnConsultarCadastrarVeiculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarCadastrarVeiculoActionPerformed
         String placaConsulta;
-        placaConsulta = txtPlaca.getText();
-        Veiculos veiculos = new Veiculos();
-        VeiculosDao dao = new VeiculosDao();
-        boolean status = dao.conectar();
-        if (status == true) {
-            veiculos = dao.consultar(placaConsulta);
-            System.out.println(" " + placaConsulta);
-            if (veiculos == null) {
-                JOptionPane.showMessageDialog(null, "Veiculo não encontrado");
-            } else {                
-                
-                txtAnoFabricacao.setText(veiculos.getAnoFabricacao().toString());
-                txtAnoModelo.setText(veiculos.getAnoModelo().toString());
-                txtChassi.setText(veiculos.getChassi().toString());
-                txtCombustivel.setText(veiculos.getCombustivel().toString());
-                txtCor.setText(veiculos.getCor().toString());
-                txtDataCadastro.setText(veiculos.getDataCadastro().format(formatoEntradaBrasileiro));
-                txtDataCompra.setText(veiculos.getDataCompra().format(formatoEntradaBrasileiro));
-                txtKmAtual.setText(veiculos.getKmAtual().toString());
-                txtMarca.setText(veiculos.getMarca().toString());
-                txtModelo.setText(veiculos.getMotor().toString());
-                txtMotor.setText(veiculos.getMotor().toString());
-                txtNumCRV.setText(veiculos.getCrv().toString());
-                txtRenavam.setText(veiculos.getRenavam().toString());
-                txtTipoVeiculo.setText(veiculos.getTipoVeiculo().toString());
-                txtVencGarantia.setText(veiculos.getVencimentoGarantia().format(formatoEntradaBrasileiro));
-                jCheckBoxInativarVeiculo.setSelected(veiculos.getInativarVeiculo());
-                
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "Erro na conexão do banco de Dados");
-        }
 
-        dao.desconectar(); 
+        if (txtPlaca.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "A placa deve ser digitada.");
+        } else {
+            placaConsulta = txtPlaca.getText();
+            Veiculos veiculos = new Veiculos();
+            VeiculosDao dao = new VeiculosDao();
+            boolean status = dao.conectar();
+            if (status == true) {
+                veiculos = dao.consultar(placaConsulta);
+                System.out.println(" " + placaConsulta);
+                if (veiculos == null) {
+                    JOptionPane.showMessageDialog(null, "Veiculo não encontrado.");
+                } else {
+
+                    txtAnoFabricacao.setText(veiculos.getAnoFabricacao().toString());
+                    txtAnoModelo.setText(veiculos.getAnoModelo().toString());
+                    txtChassi.setText(veiculos.getChassi());
+                    txtCombustivel.setText(veiculos.getCombustivel());
+                    txtCor.setText(veiculos.getCor());
+                    txtDataCadastro.setText(veiculos.getDataCadastro().format(formatoEntradaBrasileiro));
+                    txtDataCompra.setText(veiculos.getDataCompra().format(formatoEntradaBrasileiro));
+                    txtKmAtual.setText(veiculos.getKmAtual().toString());
+                    txtMarca.setText(veiculos.getMarca());
+                    txtModelo.setText(veiculos.getMotor());
+                    txtMotor.setText(veiculos.getMotor());
+                    txtNumCRV.setText(veiculos.getCrv());
+                    txtRenavam.setText(veiculos.getRenavam());
+                    txtTipoVeiculo.setText(veiculos.getTipoVeiculo());
+                    txtVencGarantia.setText(veiculos.getVencimentoGarantia().format(formatoEntradaBrasileiro));
+                    jCheckBoxInativarVeiculo.setSelected(veiculos.getInativarVeiculo());
+
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Erro na conexão do banco de Dados.");
+            }
+
+            dao.desconectar();
+        }
     }//GEN-LAST:event_btnConsultarCadastrarVeiculoActionPerformed
 
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
-        VeiculosDao dao = new VeiculosDao();        
-        Veiculos veiculos = new Veiculos();
 
-        veiculos.setPlaca(txtPlaca.getText());
-        veiculos.setAnoFabricacao(Integer.parseInt(txtAnoFabricacao.getText()));
-        veiculos.setAnoModelo(Integer.parseInt(txtAnoModelo.getText()));
-        veiculos.setChassi(txtChassi.getText());
-        veiculos.setCombustivel(txtCombustivel.getText());
-        veiculos.setCor(txtCor.getText());
-        veiculos.setCrv(txtNumCRV.getText());
-        veiculos.setDataCadastro(LocalDate.parse(txtDataCadastro.getText(), formatoEntradaBrasileiro));
-        veiculos.setDataCompra(LocalDate.parse(txtDataCompra.getText(), formatoEntradaBrasileiro));
-        veiculos.setVencimentoGarantia(LocalDate.parse(txtVencGarantia.getText(), formatoEntradaBrasileiro));            
-        veiculos.setKmAtual(Integer.parseInt(txtKmAtual.getText()));
-        veiculos.setMarca(txtMarca.getText());
-        veiculos.setModelo(txtModelo.getText());
-        veiculos.setMotor(txtMotor.getText());
-        veiculos.setRenavam(txtRenavam.getText());
-        veiculos.setTipoVeiculo(txtTipoVeiculo.getText());
-        veiculos.setInativarVeiculo(jCheckBoxInativarVeiculo.isSelected());
+        VeiculosDao dao = new VeiculosDao();
+                    
+        if (txtPlaca.getText().isEmpty() || txtAnoFabricacao.getText().isEmpty() || txtAnoModelo.getText().isEmpty() || txtChassi.getText().isEmpty()
+                || txtCombustivel.getText().isEmpty() || txtCor.getText().isEmpty() || txtNumCRV.getText().isEmpty() || txtDataCadastro.getText().isEmpty()
+                || txtDataCompra.getText().isEmpty() || txtVencGarantia.getText().isEmpty() || txtKmAtual.getText().isEmpty() || txtMarca.getText().isEmpty()
+                || txtModelo.getText().isEmpty() || txtMotor.getText().isEmpty() || txtRenavam.getText().isEmpty() || txtTipoVeiculo.getText().isEmpty()) {
+            
+            JOptionPane.showMessageDialog(null, "Todos os campos devem ser preenchidos para o veículo ser alterado.");
+            
+        } else if(dao.NoEqualsPlaca(txtPlaca.getText())){
+            JOptionPane.showMessageDialog(null, "Não existe veiculo cadastrado com essa placa, digite novamente.");            
+        }else{    
 
-        boolean status = dao.conectar();
-        if (status) {
-            status = dao.alterar(veiculos);
+            Veiculos veiculos = new Veiculos();
+
+            veiculos.setPlaca(txtPlaca.getText());
+            veiculos.setAnoFabricacao(Integer.parseInt(txtAnoFabricacao.getText()));
+            veiculos.setAnoModelo(Integer.parseInt(txtAnoModelo.getText()));
+            veiculos.setChassi(txtChassi.getText());
+            veiculos.setCombustivel(txtCombustivel.getText());
+            veiculos.setCor(txtCor.getText());
+            veiculos.setCrv(txtNumCRV.getText());
+            veiculos.setDataCadastro(LocalDate.parse(txtDataCadastro.getText(), formatoEntradaBrasileiro));
+            veiculos.setDataCompra(LocalDate.parse(txtDataCompra.getText(), formatoEntradaBrasileiro));
+            veiculos.setVencimentoGarantia(LocalDate.parse(txtVencGarantia.getText(), formatoEntradaBrasileiro));
+            veiculos.setKmAtual(Integer.parseInt(txtKmAtual.getText()));
+            veiculos.setMarca(txtMarca.getText());
+            veiculos.setModelo(txtModelo.getText());
+            veiculos.setMotor(txtMotor.getText());
+            veiculos.setRenavam(txtRenavam.getText());
+            veiculos.setTipoVeiculo(txtTipoVeiculo.getText());
+            veiculos.setInativarVeiculo(jCheckBoxInativarVeiculo.isSelected());
+
+            boolean status = dao.conectar();
             if (status) {
-                JOptionPane.showMessageDialog(null, "Veículo Alterado com sucesso");
-                limparCampos();
+                status = dao.alterar(veiculos);
+                if (status) {
+                    JOptionPane.showMessageDialog(null, "Veículo Alterado com sucesso.");
+                    limparCampos();
 
+                } else {
+                    JOptionPane.showMessageDialog(null, "Veículo não foi alterado.");
+                }
+                dao.desconectar();
             } else {
-                JOptionPane.showConfirmDialog(null, "Veículo não foi alterado");
+                JOptionPane.showMessageDialog(null, "Erro na conexão com o Banco de Dados.");
             }
-            dao.desconectar();
-        } else {
-            JOptionPane.showMessageDialog(null, "Erro na conexão com o Banco de Dados");
-        }
 
-        dao.desconectar();
+            dao.desconectar();
+        }
     }//GEN-LAST:event_btnAlterarActionPerformed
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
-        VeiculosDao dao = new VeiculosDao(); 
-        Veiculos veiculos = new Veiculos();
-        boolean status = dao.conectar();
-        String placaConsulta;
-        placaConsulta = txtPlaca.getText();
-        if (status == false) {
-            JOptionPane.showMessageDialog(null, "Erro na conexão com o Banco de Dados");
+
+        if (txtPlaca.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "A placa deve ser digitada.");
         } else {
-            if (status == true) {
-                status = dao.excluir(placaConsulta);
-                JOptionPane.showMessageDialog(null, "\"Veículo excluído com sucesso!!!");
-                limparCampos();
-                txtPlaca.requestFocus();
+
+            VeiculosDao dao = new VeiculosDao();
+            Veiculos veiculos = new Veiculos();
+            boolean status = dao.conectar();
+            String placaConsulta;
+            placaConsulta = txtPlaca.getText();
+            if (status == false) {
+                JOptionPane.showMessageDialog(null, "Erro na conexão com o Banco de Dados.");
             } else {
-                JOptionPane.showMessageDialog(null, "Erro ao tentar excluir o veiculo");
+                if (status == true) {
+                    status = dao.excluir(placaConsulta);
+                    JOptionPane.showMessageDialog(null, "\"Veículo excluído com sucesso!!!");
+                    limparCampos();
+                    txtPlaca.requestFocus();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Erro ao tentar excluir o veiculo.");
+                }
             }
+            dao.desconectar();
         }
-        dao.desconectar();
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
