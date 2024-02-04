@@ -81,32 +81,6 @@ public class PlanoManutencaoDao {
         return false;
     }
 
-    public List<PlanoManutencao> consultarKit() {
-        List<PlanoManutencao> kitDisponivel = new ArrayList<>();
-
-        try {
-            st = cn.prepareStatement("SELECT* FROM planomanutencao WHERE modelo = ?"
-                    + " AND motor  = ? AND marca = ? AND anoModelo  = ? AND  anoFabricacao  = ?");
-
-            ResultSet rs = st.executeQuery();
-
-            while (rs.next()) {
-                PlanoManutencao plano = new PlanoManutencao();
-                plano.setMarca(rs.getString("marca"));
-                plano.setModelo(rs.getString("modelo"));
-                plano.setMotor(rs.getString("motor"));
-                plano.setAnoModelo(rs.getInt("anoModelo"));
-                plano.setAnoFabricacao(rs.getInt("anoFabricacao"));
-                plano.setKmManutencao(rs.getInt("kmManutencao"));
-                plano.setValorTotal(rs.getDouble("valorTotal"));
-                kitDisponivel.add(plano);
-            }
-
-        } catch (SQLException ex) {
-        }
-        return kitDisponivel;
-    }
-
     public List<PlanoManutencao> consultarPorTipoVeiculo(String marca, String modelo, String motor, Integer anoModelo, Integer anoFabricacao) {
         List<PlanoManutencao> planoEncontrado = new ArrayList<>();
 
@@ -150,4 +124,76 @@ public class PlanoManutencaoDao {
         }
         return planoEncontrado;
     }
+
+    public int equalsKit(String marca, String modelo, String motor, int km, int anoModelo, int anoFabricacao) {
+        int value = 0;
+        try {
+            st = cn.prepareStatement("SELECT * FROM planomanutencao WHERE marca = ?"
+                    + " AND modelo  = ? AND motor = ? AND kmManutencao = ? AND anoModelo  = ? AND  anoFabricacao  = ?");
+
+            st.setString(1, marca);
+            st.setString(2, modelo);
+            st.setString(3, motor);
+            st.setInt(4, km);
+            st.setInt(5, anoModelo);
+            st.setInt(6, anoFabricacao);
+
+            ResultSet rs = st.executeQuery();
+
+            if(rs.first()) {
+                value = 1;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode());
+        }
+        return value;
+
+    }
+
+    public int NoEqualsVeiculo(String marca, String modelo, String motor, int anoModelo, int anoFabricacao) {
+        int value = 0;
+        try {
+            st = cn.prepareStatement("SELECT * FROM veiculo WHERE marca = ?"
+                    + " AND modelo  = ? AND motor = ?  AND anoModelo  = ? AND  anoFabricacao  = ?");
+            st.setString(1, marca);
+            st.setString(2, modelo);
+            st.setString(3, motor);
+            st.setInt(4, anoModelo);
+            st.setInt(5, anoFabricacao);
+            
+            ResultSet rs = st.executeQuery();
+            if(rs.first()) {
+                value = 1;
+            } 
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode());
+        }
+        
+        return value;
+    }
+
+    public int noEqualsKit(String marca, String modelo, String motor, int km, int anoModelo, int anoFabricacao) {
+        int value = 0;
+        try {
+            st = cn.prepareStatement("SELECT * FROM planomanutencao WHERE marca = ?"
+                    + " AND modelo  = ? AND motor = ? AND kmManutencao = ? AND anoModelo  = ? AND  anoFabricacao  = ?");
+
+            st.setString(1, marca);
+            st.setString(2, modelo);
+            st.setString(3, motor);
+            st.setInt(4, km);
+            st.setInt(5, anoModelo);
+            st.setInt(6, anoFabricacao);
+
+            ResultSet rs = st.executeQuery();
+
+            if(rs.first()) {
+                value = 1;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode());
+        }
+        return value;
+    }
+    
 }

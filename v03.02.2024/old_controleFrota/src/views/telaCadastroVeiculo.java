@@ -527,7 +527,7 @@ public class telaCadastroVeiculo extends javax.swing.JFrame {
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
 
         VeiculosDao dao = new VeiculosDao();
-                    
+        boolean status = dao.conectar();                    
         if (txtPlaca.getText().isEmpty() || txtAnoFabricacao.getText().isEmpty() || txtAnoModelo.getText().isEmpty() || txtChassi.getText().isEmpty()
                 || txtCombustivel.getText().isEmpty() || txtCor.getText().isEmpty() || txtNumCRV.getText().isEmpty() || txtDataCadastro.getText().isEmpty()
                 || txtDataCompra.getText().isEmpty() || txtVencGarantia.getText().isEmpty() || txtKmAtual.getText().isEmpty() || txtMarca.getText().isEmpty()
@@ -535,7 +535,7 @@ public class telaCadastroVeiculo extends javax.swing.JFrame {
             
             JOptionPane.showMessageDialog(null, "Todos os campos devem ser preenchidos para o veículo ser alterado.");
             
-        } else if(dao.NoEqualsPlaca(txtPlaca.getText())){
+        } else if(dao.NoEqualsPlaca(txtPlaca.getText()) == 0){
             JOptionPane.showMessageDialog(null, "Não existe veiculo cadastrado com essa placa, digite novamente.");            
         }else{    
 
@@ -559,7 +559,6 @@ public class telaCadastroVeiculo extends javax.swing.JFrame {
             veiculos.setTipoVeiculo(txtTipoVeiculo.getText());
             veiculos.setInativarVeiculo(jCheckBoxInativarVeiculo.isSelected());
 
-            boolean status = dao.conectar();
             if (status) {
                 status = dao.alterar(veiculos);
                 if (status) {
@@ -594,7 +593,7 @@ public class telaCadastroVeiculo extends javax.swing.JFrame {
             } else {
                 if (status == true) {
                     status = dao.excluir(placaConsulta);
-                    JOptionPane.showMessageDialog(null, "\"Veículo excluído com sucesso!!!");
+                    JOptionPane.showMessageDialog(null, "Veículo excluído com sucesso!");
                     limparCampos();
                     txtPlaca.requestFocus();
                 } else {

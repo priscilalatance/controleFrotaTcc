@@ -134,4 +134,50 @@ public class PlanoItemManutencaoDao {
         return itemEncontrado;
 
     }
+
+    public int NoEqualsVeiculoItem( String modelo, String motor, int km, int anoModelo, int anoFabricacao) {
+        int value = 0;
+        try {
+            st = cn.prepareStatement("SELECT * FROM veiculo WHERE marca = ?"
+                    + " AND modelo  = ? AND motor = ? AND kmAtual = ? AND anoModelo  = ? AND  anoFabricacao  = ?");
+            st.setString(1, modelo);
+            st.setString(2, motor);
+            st.setInt(3, km);
+            st.setInt(4, anoModelo);
+            st.setInt(5, anoFabricacao);
+            
+            ResultSet rs = st.executeQuery();
+            if(rs.first()) {
+                value = 1;
+            } 
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode());
+        }
+        
+        return value;
+
+    }
+
+    public int NoEqualsKitItem(String modelo, String motor, int km, int anoModelo, int anoFabricacao) {
+        int value = 0;        
+        try {
+            st = cn.prepareStatement("SELECT * FROM planomanutencao WHERE modelo  = ?"
+                    + " AND motor = ? AND kmManutencao = ? AND anoModelo  = ? AND  anoFabricacao  = ?");
+
+            st.setString(1, modelo);
+            st.setString(2, motor);
+            st.setInt(3, km);
+            st.setInt(4, anoModelo);
+            st.setInt(5, anoFabricacao);
+
+            ResultSet rs = st.executeQuery();
+
+            if(rs.first()) {
+                value = 1;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode());
+        }
+        return value;
+    }
 }

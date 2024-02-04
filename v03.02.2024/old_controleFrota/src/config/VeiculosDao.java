@@ -154,19 +154,20 @@ public class VeiculosDao {
 
     }
 
-    public boolean NoEqualsPlaca(String placa) {
+    public int NoEqualsPlaca(String placa) {
+        int value = 0;
         try {
             st = conn.prepareStatement("SELECT * FROM veiculo WHERE placa = ?");
             st.setString(1, placa);
             ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                return false;
+            if(rs.first()) {
+                value = 1;
             } 
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode());
         }
         
-        return true;
+        return value;
     }
 
 }

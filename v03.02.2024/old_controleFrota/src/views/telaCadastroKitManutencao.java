@@ -165,81 +165,120 @@ public class telaCadastroKitManutencao extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCodItemPlanoKeyReleased
 
-        void limparCampos() {
-        txtCodItemPlano.setText("");        
+    void limparCampos() {
+        txtCodItemPlano.setText("");
     }
     private void btnIncluirKitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirKitActionPerformed
         // TODO add your handling code here:
-        int resp;
         PlanoManutencaoDao dao = new PlanoManutencaoDao();
-        PlanoManutencao plano = new PlanoManutencao();
-        plano.setMarca(cboMarcaKit.getSelectedItem().toString());
-        plano.setModelo(cboModeloKit.getSelectedItem().toString());
-        plano.setMotor(cboMotorKit.getSelectedItem().toString());
-        plano.setKmManutencao(Integer.parseInt(cboKmManutKit.getSelectedItem().toString()));
-        plano.setAnoModelo(Integer.parseInt(cboAnoModKit.getSelectedItem().toString()));
-        plano.setAnoFabricacao(Integer.parseInt(cboAnoFabriKit.getSelectedItem().toString()));
-        plano.setValorTotal(0.00);
 
-        resp = dao.incluirKit(plano);
-        if (resp == 1) {
-            JOptionPane.showMessageDialog(null, "Dados inseridos com sucesso!!!");
-        } else if (resp == 1062) {
-            JOptionPane.showMessageDialog(null, "Kit já cadastrado");
+        if (dao.NoEqualsVeiculo(cboMarcaKit.getSelectedItem().toString(), cboModeloKit.getSelectedItem().toString(),
+                cboMotorKit.getSelectedItem().toString(), (Integer.parseInt(cboAnoModKit.getSelectedItem().toString())),
+                (Integer.parseInt(cboAnoFabriKit.getSelectedItem().toString()))) == 0) {
 
+            JOptionPane.showMessageDialog(null, "Não existe veiculo cadastrado, devido a isso não é possivel cadastrar um Kit associado.");
+
+        } else if (dao.equalsKit(cboMarcaKit.getSelectedItem().toString(), cboModeloKit.getSelectedItem().toString(),
+                cboMotorKit.getSelectedItem().toString(), (Integer.parseInt(cboKmManutKit.getSelectedItem().toString())),
+                (Integer.parseInt(cboAnoModKit.getSelectedItem().toString())), (Integer.parseInt(cboAnoFabriKit.getSelectedItem().toString()))) == 1) {
+            JOptionPane.showMessageDialog(null, "Já existe esse kit cadastrado.");
         } else {
-            JOptionPane.showMessageDialog(null, "Erro ao salvar!!!");
-        }
 
+            int resp;
+
+            PlanoManutencao plano = new PlanoManutencao();
+            plano.setMarca(cboMarcaKit.getSelectedItem().toString());
+            plano.setModelo(cboModeloKit.getSelectedItem().toString());
+            plano.setMotor(cboMotorKit.getSelectedItem().toString());
+            plano.setKmManutencao(Integer.parseInt(cboKmManutKit.getSelectedItem().toString()));
+            plano.setAnoModelo(Integer.parseInt(cboAnoModKit.getSelectedItem().toString()));
+            plano.setAnoFabricacao(Integer.parseInt(cboAnoFabriKit.getSelectedItem().toString()));
+            plano.setValorTotal(0.00);
+
+            resp = dao.incluirKit(plano);
+            if (resp == 1) {
+                JOptionPane.showMessageDialog(null, "Dados inseridos com sucesso!!!");
+            } else if (resp == 1062) {
+                JOptionPane.showMessageDialog(null, "Kit já cadastrado");
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Erro ao salvar!!!");
+            }
+        }
     }//GEN-LAST:event_btnIncluirKitActionPerformed
 
     private void btnAlterarKitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarKitActionPerformed
-        // TODO add your handling code here:
 
         PlanoManutencaoDao dao = new PlanoManutencaoDao();
-        PlanoManutencao plano = new PlanoManutencao();
-        plano.setMarca(cboMarcaKit.getSelectedItem().toString());
-        plano.setModelo(cboModeloKit.getSelectedItem().toString());
-        plano.setMotor(cboMotorKit.getSelectedItem().toString());
-        plano.setKmManutencao(Integer.parseInt(cboKmManutKit.getSelectedItem().toString()));
-        plano.setAnoModelo(Integer.parseInt(cboAnoModKit.getSelectedItem().toString()));
-        plano.setAnoFabricacao(Integer.parseInt(cboAnoFabriKit.getSelectedItem().toString()));
+        if (dao.NoEqualsVeiculo(cboMarcaKit.getSelectedItem().toString(), cboModeloKit.getSelectedItem().toString(),
+                cboMotorKit.getSelectedItem().toString(), (Integer.parseInt(cboAnoModKit.getSelectedItem().toString())),
+                (Integer.parseInt(cboAnoFabriKit.getSelectedItem().toString()))) == 0) {
 
-        boolean status = dao.alterar(plano);
-        if (status) {
-            JOptionPane.showMessageDialog(null, "Kit Alterado com sucesso");
+            JOptionPane.showMessageDialog(null, "Não existe veiculo cadastrado para esse kit.");
+
         } else {
-            JOptionPane.showMessageDialog(null, "Kit não foi alterado");
-        }
 
+            PlanoManutencao plano = new PlanoManutencao();
+            plano.setMarca(cboMarcaKit.getSelectedItem().toString());
+            plano.setModelo(cboModeloKit.getSelectedItem().toString());
+            plano.setMotor(cboMotorKit.getSelectedItem().toString());
+            plano.setKmManutencao(Integer.parseInt(cboKmManutKit.getSelectedItem().toString()));
+            plano.setAnoModelo(Integer.parseInt(cboAnoModKit.getSelectedItem().toString()));
+            plano.setAnoFabricacao(Integer.parseInt(cboAnoFabriKit.getSelectedItem().toString()));
+
+            boolean status = dao.alterar(plano);
+            if (status) {
+                JOptionPane.showMessageDialog(null, "Kit Alterado com sucesso");
+            } else {
+                JOptionPane.showMessageDialog(null, "Kit não foi alterado");
+            }
+        }
     }//GEN-LAST:event_btnAlterarKitActionPerformed
 
     private void btnIncluirPlanoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirPlanoActionPerformed
         int resp;
         PlanoItemManutencaoDao dao = new PlanoItemManutencaoDao();
-        PlanoItemManutencao plano = new PlanoItemManutencao();
-        plano.setIdCodigo(Integer.parseInt(txtCodItemPlano.getText()));
-        plano.setModelo(cboModeloPlano.getSelectedItem().toString());
-        plano.setMotor(cboMotorPlano.getSelectedItem().toString());
-        plano.setKmManutencao(Integer.parseInt(cboKmManutPlano.getSelectedItem().toString()));
-        plano.setAnoModelo(Integer.parseInt(cboAnoModPlano.getSelectedItem().toString()));
-        plano.setAnoFabricacao(Integer.parseInt(cboAnoFabriPlano.getSelectedItem().toString()));
 
-        resp = dao.incluirItemAoKit(plano);
-        if (resp == 1) {
-            JOptionPane.showMessageDialog(null, "Dados inseridos com sucesso!!!");
-        } else if (resp == 1062) {
-            JOptionPane.showMessageDialog(null, "Item já cadastrado");
+        if (txtCodItemPlano.getText().isEmpty()) {
 
+            JOptionPane.showMessageDialog(null, "Está vazio o código do Item.");
+
+        } else if (dao.NoEqualsVeiculoItem(cboModeloPlano.getSelectedItem().toString(), cboMotorPlano.getSelectedItem().toString(),
+                (Integer.parseInt(cboKmManutPlano.getSelectedItem().toString())), (Integer.parseInt(cboAnoModPlano.getSelectedItem().toString())),
+                (Integer.parseInt(cboAnoFabriPlano.getSelectedItem().toString()))) == 0) {
+
+            JOptionPane.showMessageDialog(null, "Não existe veiculo cadastrado para esse kit.");
+
+        } else if (dao.NoEqualsKitItem(cboModeloPlano.getSelectedItem().toString(), cboMotorPlano.getSelectedItem().toString(),
+                (Integer.parseInt(cboKmManutPlano.getSelectedItem().toString())), (Integer.parseInt(cboAnoModPlano.getSelectedItem().toString())),
+                (Integer.parseInt(cboAnoFabriPlano.getSelectedItem().toString()))) == 0) {
+            JOptionPane.showMessageDialog(null, "Não existe esse kit cadastrado, então não é possivel incluir itens.");
         } else {
-            JOptionPane.showMessageDialog(null, "Erro ao salvar!!!");
+
+            PlanoItemManutencao plano = new PlanoItemManutencao();
+            plano.setIdCodigo(Integer.parseInt(txtCodItemPlano.getText()));
+            plano.setModelo(cboModeloPlano.getSelectedItem().toString());
+            plano.setMotor(cboMotorPlano.getSelectedItem().toString());
+            plano.setKmManutencao(Integer.parseInt(cboKmManutPlano.getSelectedItem().toString()));
+            plano.setAnoModelo(Integer.parseInt(cboAnoModPlano.getSelectedItem().toString()));
+            plano.setAnoFabricacao(Integer.parseInt(cboAnoFabriPlano.getSelectedItem().toString()));
+
+            resp = dao.incluirItemAoKit(plano);
+            if (resp == 1) {
+                JOptionPane.showMessageDialog(null, "Dados inseridos com sucesso!!!");
+            } else if (resp == 1062) {
+                JOptionPane.showMessageDialog(null, "Item já cadastrado");
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Erro ao salvar!!!");
+            }
+
         }
-
-
     }//GEN-LAST:event_btnIncluirPlanoActionPerformed
 
     private void btnExcluirPlanoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirPlanoActionPerformed
         PlanoItemManutencaoDao dao = new PlanoItemManutencaoDao();
+
         PlanoItemManutencao plano = new PlanoItemManutencao();
         String modelo = cboModeloPlano.getSelectedItem().toString();
         String motor = cboMotorPlano.getSelectedItem().toString();
@@ -258,8 +297,8 @@ public class telaCadastroKitManutencao extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "Erro ao tentar excluir o Item");
             }
-        }
 
+        }
 
     }//GEN-LAST:event_btnExcluirPlanoActionPerformed
 
