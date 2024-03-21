@@ -1,10 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package views;
 
+import config.Conectar;
+import config.OrdemServico;
+import config.OrdemServicoDao;
+import config.VeiculosDao;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,9 +18,8 @@ import java.util.logging.Logger;
  */
 public class telaManutencao extends javax.swing.JFrame {
 
-    /**
-     * Creates new form telaManutencao
-     */
+    Conectar con = new Conectar();
+    PreparedStatement st;
     public telaManutencao() {
         initComponents();
     }
@@ -34,8 +37,8 @@ public class telaManutencao extends javax.swing.JFrame {
         txtPlacaManut = new app.bolivia.swing.JCTextField();
         btnConsultarPlaca = new javax.swing.JButton();
         btnLimparPlaca = new javax.swing.JButton();
-        pnlConsultarOSManut = new javax.swing.JPanel();
         lblConsultarOSManut = new javax.swing.JLabel();
+        pnlConsultarOSManut = new javax.swing.JPanel();
         cboCodOSPreventManut = new javax.swing.JComboBox<>();
         cboCodOSCorretManut = new javax.swing.JComboBox<>();
         btnConsultarOSManut = new javax.swing.JButton();
@@ -86,11 +89,24 @@ public class telaManutencao extends javax.swing.JFrame {
 
         btnConsultarPlaca.setContentAreaFilled(false);
         btnConsultarPlaca.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnConsultarPlaca.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarPlacaActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnConsultarPlaca, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 80, 30, 40));
 
         btnLimparPlaca.setContentAreaFilled(false);
         btnLimparPlaca.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnLimparPlaca.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimparPlacaActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnLimparPlaca, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 90, 40, 30));
+
+        lblConsultarOSManut.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
+        jPanel1.add(lblConsultarOSManut, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 80, 600, 30));
 
         pnlConsultarOSManut.setBackground(new java.awt.Color(204, 204, 204));
         pnlConsultarOSManut.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -107,9 +123,6 @@ public class telaManutencao extends javax.swing.JFrame {
         );
 
         jPanel1.add(pnlConsultarOSManut, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 80, 620, 40));
-
-        lblConsultarOSManut.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
-        jPanel1.add(lblConsultarOSManut, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 80, 600, 30));
 
         jPanel1.add(cboCodOSPreventManut, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 160, 180, 40));
 
@@ -441,6 +454,71 @@ public class telaManutencao extends javax.swing.JFrame {
     private void txtValorTotCorretKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtValorTotCorretKeyReleased
         // TODO add your handling code here:
     }//GEN-LAST:event_txtValorTotCorretKeyReleased
+
+    private void btnLimparPlacaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparPlacaActionPerformed
+        lblConsultarOSManut.setText("");
+        txtPlacaManut.setText("");
+    }//GEN-LAST:event_btnLimparPlacaActionPerformed
+
+    private void btnConsultarPlacaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarPlacaActionPerformed
+        /*VeiculosDao veiculo = new VeiculosDao();
+        OrdemServico servicoPreventivo = new OrdemServico();
+        OrdemServico servicoCorretivo = new OrdemServico();
+        OrdemServicoDao dao = new OrdemServicoDao();
+        
+        if(txtPlacaManut.getText().isEmpty()){
+            lblConsultarOSManut.setText("A placa deve ser digitada.");
+        }else{
+            String placa = txtPlacaManut.getText();
+        int value = 0;    
+        Connection cn = con.conexao();    
+        //Retornar as OS agendada referente essas placas
+        try {
+            cboCodOSCorretManut.addItem(null);
+            cboCodOSPreventManut.addItem(null);
+            
+            PreparedStatement st = cn.prepareStatement("SELECT DISTINCT OSCorretiva FROM agenda WHERE placa = ? "
+                    + "AND OSCorretiva IS NOT NULL AND OSCorretiva <> 0 AND status = ?");                                   
+            st.setString(1, placa);
+            st.setString(2, "agendado");
+            
+            ResultSet rs = st.executeQuery();            
+            while (rs.next()) {
+                cboCodOSCorretManut.addItem(Integer.toString(rs.getInt("OSCorretiva")));
+                value = 1;
+            }
+            
+            PreparedStatement stCorretiva = cn.prepareStatement("SELECT DISTINCT OSCorretiva FROM agenda WHERE placa = ? "
+                    + "AND OSCorretiva IS NOT NULL AND OSCorretiva <> 0 AND status = ?");                                    
+            stCorretiva.setString(1, placa);
+            stCorretiva.setString(2, "processo");
+            
+            ResultSet rsProcesso = stCorretiva.executeQuery();            
+            while (rsProcesso.next()) {
+                cboCodOSCorretManut.addItem(Integer.toString(rs.getInt("OSCorretiva")));
+                value = 1;
+            }
+            
+            PreparedStatement stPreventiva = cn.prepareStatement("SELECT DISTINCT OSPreventiva FROM agenda WHERE placa = ? "
+                    + "AND OSPreventiva IS NOT NULL AND OSPreventiva <> 0 AND status = ?");                                   
+            stPreventiva.setString(1, placa);
+            stPreventiva.setString(2, "agendado");
+            
+            ResultSet rsPreventiva = stPreventiva.executeQuery();            
+            while (rsPreventiva.next()) {
+                cboCodOSPreventManut.addItem(Integer.toString(rs.getInt("OSPreventiva")));
+                value = 1;
+            }
+            
+            if (value == 0){
+            lblConsultarOSManut.setText("Não tem OS cadastrada para essa placa.");
+            }
+        } catch (SQLException ex) {
+            lblConsultarOSManut.setText("Erro de banco, tente novamente.");
+        }
+
+        }*/
+    }//GEN-LAST:event_btnConsultarPlacaActionPerformed
 
     /**
      * @param args the command line arguments

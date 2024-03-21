@@ -15,15 +15,17 @@ import java.util.List;
  */
 public class AgendaDao {
 
-    public AgendaDao() {
-    }
-
     //Criando a conexão com o banco
     Conectar con = new Conectar();
-    Connection cn = con.conexao();
     PreparedStatement st;
 
+    public AgendaDao() {
+
+    }
+
     public int incluirAgenda(List<Agenda> agendas) {
+        Connection cn = con.conexao();
+
         int status = 0;
         try {
 
@@ -37,6 +39,7 @@ public class AgendaDao {
 
                 status = st.executeUpdate();
             }
+            con.desconectar(cn);
             return status;
         } catch (SQLException ex) {
             System.err.println("Erro ao gravar agenda no banco de dados: " + ex.getMessage());
@@ -46,6 +49,7 @@ public class AgendaDao {
     }
 
     public int NoEqualsData(LocalDate data) {
+        Connection cn = con.conexao();
         int value = 0;
         try {
             st = cn.prepareStatement("SELECT * FROM agenda WHERE data = ?");
@@ -58,11 +62,12 @@ public class AgendaDao {
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode());
         }
-
+        con.desconectar(cn);
         return value;
     }
 
     public boolean alterar(Agenda agenda) {
+        Connection cn = con.conexao();
         try {
 
             st = cn.prepareStatement("UPDATE agenda SET status = ? WHERE data = ?");
@@ -71,15 +76,18 @@ public class AgendaDao {
             st.setDate(2, java.sql.Date.valueOf(agenda.getData()));
 
             int status = st.executeUpdate();
+            con.desconectar(cn);
             return status > 0;
 
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode());
+            con.desconectar(cn);
             return false;
         }
     }
 
     public List<Agenda> consultarPorAgenda(LocalDate dataAtual) {
+        Connection cn = con.conexao();
         List<Agenda> agendaEncontrada = new ArrayList<>();
 
         ResultSet rs = null;
@@ -111,10 +119,12 @@ public class AgendaDao {
                 ex.printStackTrace();
             }
         }
+        con.desconectar(cn);
         return agendaEncontrada;
     }
 
     public List<Agenda> consultarPorHorarioBox(LocalDate data) {
+        Connection cn = con.conexao();
         List<Agenda> agendaEncontrada = new ArrayList<>();
 
         ResultSet rs = null;
@@ -145,10 +155,12 @@ public class AgendaDao {
                 ex.printStackTrace();
             }
         }
+        con.desconectar(cn);
         return agendaEncontrada;
     }
 
     public int noEqualsDiaHorarioDisponivel(LocalDate data, String horario, int box) {
+        Connection cn = con.conexao();
         int value = 0;
         ResultSet rs = null;
         try {
@@ -165,35 +177,93 @@ public class AgendaDao {
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode());
         }
-
+        con.desconectar(cn);
         return value;
     }
 
-    public boolean agendarVeiculo(Agenda agenda) {
+    public boolean agendarVeiculoCorretivaPreventiva(Agenda agenda) {
+        Connection cn = con.conexao();
         try {
 
-            st = cn.prepareStatement("UPDATE agenda SET placa = ?, status = ? WHERE data = ? AND horario = ? AND status = ? AND box = ?");
+            st = cn.prepareStatement("UPDATE agenda SET placa = ?, status = ?, OSPreventiva = ?,OSCorretiva = ? WHERE data = ? AND horario = ? AND status = ?"
+                    + " AND box = ?");
             st.setString(1, agenda.getPlaca());
             st.setString(2, "agendado");
-            st.setDate(3, java.sql.Date.valueOf(agenda.getData()));
-            st.setString(4, agenda.getHorario());
-            st.setString(5, "disponivel");
-            st.setInt(6, agenda.getBox());
+            st.setInt(3, agenda.getOsPreventiva());
+            st.setInt(4, agenda.getOsCorretiva());
+            st.setDate(5, java.sql.Date.valueOf(agenda.getData()));
+            st.setString(6, agenda.getHorario());
+            st.setString(7, "disponivel");
+            st.setInt(8, agenda.getBox());
 
             int status = st.executeUpdate();
+            con.desconectar(cn);
             return status > 0;
 
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode());
+            con.desconectar(cn);
+            return false;
+        }
+    }
+
+    public boolean agendarVeiculoPreventiva(Agenda agenda) {
+        Connection cn = con.conexao();
+
+        try {
+
+            st = cn.prepareStatement("UPDATE agenda SET placa = ?, status = ?, OSPreventiva = ? WHERE data = ? AND horario = ? AND status = ?"
+                    + " AND box = ?");
+            st.setString(1, agenda.getPlaca());
+            st.setString(2, "agendado");
+            st.setInt(3, agenda.getOsPreventiva());
+            st.setDate(4, java.sql.Date.valueOf(agenda.getData()));
+            st.setString(5, agenda.getHorario());
+            st.setString(6, "disponivel");
+            st.setInt(7, agenda.getBox());
+
+            int status = st.executeUpdate();
+            con.desconectar(cn);
+            return status > 0;
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode());
+            con.desconectar(cn);
+            return false;
+        }
+    }
+
+    public boolean agendarVeiculoCorretiva(Agenda agenda) {
+        Connection cn = con.conexao();
+        try {
+
+            st = cn.prepareStatement("UPDATE agenda SET placa = ?, status = ?, OSCorretiva = ? WHERE data = ? AND horario = ? AND status = ?"
+                    + " AND box = ?");
+            st.setString(1, agenda.getPlaca());
+            st.setString(2, "agendado");
+            st.setInt(3, agenda.getOsCorretiva());
+            st.setDate(4, java.sql.Date.valueOf(agenda.getData()));
+            st.setString(5, agenda.getHorario());
+            st.setString(6, "disponivel");
+            st.setInt(7, agenda.getBox());
+
+            int status = st.executeUpdate();
+            con.desconectar(cn);
+            return status > 0;
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode());
+            con.desconectar(cn);
             return false;
         }
     }
 
     public int noEqualsAgendado(LocalDate data, String horario, String placa, int box) {
+        Connection cn = con.conexao();
         int value = 0;
         ResultSet rs = null;
         try {
-            st = cn.prepareStatement("SELECT * FROM agenda WHERE data = ? AND horario = ? AND status = ? AND box = ? AND placa = ?");
+            PreparedStatement st = cn.prepareStatement("SELECT * FROM agenda WHERE data = ? AND horario = ? AND status = ? AND box = ? AND placa = ?");
             st.setDate(1, java.sql.Date.valueOf(data));
             st.setString(2, horario);
             st.setString(3, "agendado");
@@ -207,45 +277,58 @@ public class AgendaDao {
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode());
         }
-
+        con.desconectar(cn);
         return value;
     }
 
     public boolean CancelarVeiculo(Agenda agenda) {
+        Connection cn = con.conexao();
         try {
 
-            st = cn.prepareStatement("UPDATE agenda SET status = ?, placa = ? WHERE data = ? AND horario = ? AND status = ? AND box = ? AND placa = ?");
+            PreparedStatement st = cn.prepareStatement("UPDATE agenda SET status = ?, placa = ?, OSPreventiva = ?, OSCorretiva = ?"
+                    + " WHERE data = ? "
+                    + "AND horario = ? AND status = ? AND box = ? AND placa = ?");
 
             st.setString(1, "disponivel");
             st.setString(2, null);
-            st.setDate(3, java.sql.Date.valueOf(agenda.getData()));
-            st.setString(4, agenda.getHorario());
-            st.setString(5, "agendado");
-            st.setInt(6, agenda.getBox());
-            st.setString(7, agenda.getPlaca());
+            st.setInt(3, 0);
+            st.setInt(4, 0);
+            st.setDate(5, java.sql.Date.valueOf(agenda.getData()));
+            st.setString(6, agenda.getHorario());
+            st.setString(7, "agendado");
+            st.setInt(8, agenda.getBox());
+            st.setString(9, agenda.getPlaca());
 
             int status = st.executeUpdate();
-
+            con.desconectar(cn);
             return status > 0;
 
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode());
+            con.desconectar(cn);
             return false;
         }
     }
 
     public List<Agenda> consultarPorAgendamentoPlaca(String placa) {
+        Connection cn = con.conexao();
         List<Agenda> agendaEncontrada = new ArrayList<>();
         ResultSet rs = null;
         try {
-            st = cn.prepareStatement("SELECT * FROM agenda WHERE placa = ? AND status = ?");
+            PreparedStatement st = cn.prepareStatement("SELECT * FROM agenda WHERE placa = ? AND status = ?");
             st.setString(1, placa);
             st.setString(2, "agendado");
-            
+
             rs = st.executeQuery();
-            
+
             while (rs.next()) {
                 Agenda agenda = new Agenda();
+                if (rs.getInt("OSPreventiva") != 0) {
+                    agenda.setOsPreventiva(rs.getInt("OSPreventiva"));
+                }
+                if (rs.getInt("OSCorretiva") != 0) {
+                    agenda.setOsCorretiva(rs.getInt("OSCorretiva"));
+                }
                 agenda.setData(rs.getDate("data").toLocalDate());
                 agenda.setHorario(rs.getString("horario"));
                 agenda.setBox(rs.getInt("box"));
@@ -254,7 +337,7 @@ public class AgendaDao {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             try {
                 if (rs != null) {
                     rs.close();
@@ -266,6 +349,7 @@ public class AgendaDao {
                 ex.printStackTrace();
             }
         }
+        con.desconectar(cn);
         return agendaEncontrada;
     }
 }

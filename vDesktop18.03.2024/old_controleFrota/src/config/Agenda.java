@@ -13,6 +13,24 @@ public class Agenda {
     private String placa;
     private String status;
     private Integer box;
+    private Integer osPreventiva;
+    private Integer osCorretiva;
+
+    public Integer getOsPreventiva() {
+        return osPreventiva;
+    }
+
+    public void setOsPreventiva(Integer osPreventiva) {
+        this.osPreventiva = osPreventiva;
+    }
+
+    public Integer getOsCorretiva() {
+        return osCorretiva;
+    }
+
+    public void setOsCorretiva(Integer osCorretiva) {
+        this.osCorretiva = osCorretiva;
+    }
 
     public Integer getId() {
         return id;

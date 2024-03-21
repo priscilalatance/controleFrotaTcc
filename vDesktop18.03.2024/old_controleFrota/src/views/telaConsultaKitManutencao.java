@@ -26,7 +26,6 @@ public class telaConsultaKitManutencao extends javax.swing.JFrame {
 
     //Criando a conexão com o banco
     Conectar con = new Conectar();
-    Connection cn = con.conexao();
 
     public telaConsultaKitManutencao() {
         this.con = new Conectar();
@@ -123,7 +122,7 @@ public class telaConsultaKitManutencao extends javax.swing.JFrame {
                 btnConsultarItemActionPerformed(evt);
             }
         });
-        jPanel1.add(btnConsultarItem, new org.netbeans.lib.awtextra.AbsoluteConstraints(1223, 100, 40, 30));
+        jPanel1.add(btnConsultarItem, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 100, 40, 40));
 
         btnLimparItem.setContentAreaFilled(false);
         btnLimparItem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -371,10 +370,9 @@ public class telaConsultaKitManutencao extends javax.swing.JFrame {
                     plano.getMotor(),
                     plano.getAnoModelo(),
                     plano.getAnoFabricacao(),
-                    plano.getKmManutencao(),
-                });
+                    plano.getKmManutencao(),});
             }
-
+            lblConPlanTpVeic.setText("");
             tblKitporTipoVeiculo1.setModel(model);
         }
     }//GEN-LAST:event_btnConsultarKitActionPerformed
@@ -414,7 +412,7 @@ public class telaConsultaKitManutencao extends javax.swing.JFrame {
             for (CadastroItem item : itensKit) {
                 model.addRow(new Object[]{
                     item.getIdCodigo(),
-                    item.getDescricaoItem(),                    
+                    item.getDescricaoItem(),
                     item.getMarca(),
                     item.getModelo(),
                     item.getCor(),
@@ -423,7 +421,7 @@ public class telaConsultaKitManutencao extends javax.swing.JFrame {
                     item.getValorUnitario()
                 });
             }
-
+            lblConProdPlan.setText("");
             tblKitporTipoVeiculo.setModel(model);
         }
 
@@ -437,11 +435,13 @@ public class telaConsultaKitManutencao extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLimparItemActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
+
         new telaInicial().setVisible(true);
         dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
 
     public void popularJComboBoxConsultarKit() {
+        Connection cn = con.conexao();
         try {
 
             String sqlMarca = "SELECT DISTINCT marca FROM veiculo ORDER BY marca ASC";
@@ -478,7 +478,7 @@ public class telaConsultaKitManutencao extends javax.swing.JFrame {
             while (rsAnoFabricacao.next()) {
                 cboAnoFabriKitVei.addItem(rsAnoFabricacao.getString("anoFabricacao"));
             }
-
+            con.desconectar(cn);
         } catch (SQLException ex) {
             lblConPlanTpVeic.setText("Erro de banco.");
         }
@@ -486,6 +486,7 @@ public class telaConsultaKitManutencao extends javax.swing.JFrame {
     }
 
     public void popularJComboBoxConsultarItemKit() {
+        Connection cn = con.conexao();
         try {
 
             String sqlModelo = "SELECT DISTINCT modelo FROM veiculo ORDER BY modelo ASC";
@@ -520,7 +521,7 @@ public class telaConsultaKitManutencao extends javax.swing.JFrame {
             for (Integer km : kmManutencao) {
                 cboKmManutItemKit.addItem(km.toString());
             }
-
+            con.desconectar(cn);
         } catch (SQLException ex) {
             lblConProdPlan.setText("Erro de banco.");
         }

@@ -1,21 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package views;
 
-/**
- *
- * @author maria
- */
+import config.Conectar;
+import config.OrdemServico;
+import config.OrdemServicoDao;
+import config.VeiculosDao;
+import java.sql.Connection;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 public class telaConsultarOSAberta extends javax.swing.JFrame {
 
-    /**
-     * Creates new form telaConsultarOSAberta
-     */
+    //Criando a conexão com o banco
+    Conectar con = new Conectar();
+    Connection cn = con.conexao();
+    DateTimeFormatter formatoEntradaBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     public telaConsultarOSAberta() {
+        this.con = new Conectar();
         initComponents();
+    }
+
+    private void limparCampos() {
+        txtPlacaOS.setText("");
+        rbtOSCorret.setSelected(false);
+        rbtOSPrevent.setSelected(false);
+        lblConsultarOSAber.setText("");
+        DefaultTableModel model = (DefaultTableModel) tblOSCorret.getModel();
+        model.setRowCount(0);
+        DefaultTableModel modelPreventiva = (DefaultTableModel) tblOSPrevent.getModel();
+        modelPreventiva.setRowCount(0);
+
     }
 
     /**
@@ -70,18 +86,38 @@ public class telaConsultarOSAberta extends javax.swing.JFrame {
 
         btnLimparOS.setContentAreaFilled(false);
         btnLimparOS.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnLimparOS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimparOSActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnLimparOS, new org.netbeans.lib.awtextra.AbsoluteConstraints(1003, 100, 40, 40));
 
         btnConsultarOS.setContentAreaFilled(false);
         btnConsultarOS.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnConsultarOS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarOSActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnConsultarOS, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 100, 30, 40));
 
         btnVoltar.setContentAreaFilled(false);
         btnVoltar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVoltarActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnVoltar, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 860, 130, 20));
 
         btnAgenManut.setContentAreaFilled(false);
         btnAgenManut.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAgenManut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgenManutActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnAgenManut, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 860, 250, 20));
 
         pnlConsultarOSAber.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -232,6 +268,104 @@ public class telaConsultarOSAberta extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPlacaOSKeyReleased
 
+    private void btnAgenManutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgenManutActionPerformed
+        new telaAgendamento().setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btnAgenManutActionPerformed
+
+    private void btnConsultarOSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarOSActionPerformed
+        VeiculosDao veiculo = new VeiculosDao();
+        OrdemServico servicoPreventivo = new OrdemServico();
+        OrdemServico servicoCorretivo = new OrdemServico();
+        OrdemServicoDao dao = new OrdemServicoDao();
+
+        if (txtPlacaOS.getText().isEmpty()) {
+            lblConsultarOSAber.setText("Placa não pode ser vazia.");
+        } else if (dao.NoEqualsPlaca(txtPlacaOS.getText()) == 0) {
+            lblConsultarOSAber.setText("Essa placa não está cadastrada em Veiculo.");
+        } else if (!rbtOSCorret.isSelected() && !rbtOSPrevent.isSelected()) {
+            DefaultTableModel model = (DefaultTableModel) tblOSCorret.getModel();
+            model.setRowCount(0);
+            DefaultTableModel modelPreventiva = (DefaultTableModel) tblOSPrevent.getModel();
+            modelPreventiva.setRowCount(0);
+
+            lblConsultarOSAber.setText("Selecione pelo menos um tipo de Manutenção.");
+        } else {
+            String placa = txtPlacaOS.getText();
+
+            if (rbtOSPrevent.isSelected()) {
+
+                List<OrdemServico> ordemPreventiva = dao.consultarPreventiva(placa, "Preventiva", "Aberto");
+
+                if (ordemPreventiva.isEmpty()) {
+                    lblConsultarOSAber.setText("Nenhum cadastro encontrado com a descrição fornecida.");
+                } else {
+                    DefaultTableModel model = new DefaultTableModel();
+                    model.addColumn("DATA");
+                    model.addColumn("CÓD. O.S. PREV.");
+                    model.addColumn("KM MANUTENÇÃO");
+
+                    for (OrdemServico ordem : ordemPreventiva) {
+                        model.addRow(new Object[]{
+                            ordem.getDataCheck().format(formatoEntradaBrasileiro),
+                            ordem.getId(),
+                            ordem.getKmPreventiva()
+
+                        });
+                    }
+                    lblConsultarOSAber.setText("");
+                    tblOSPrevent.setModel(model);
+                }
+
+            }
+            if (rbtOSCorret.isSelected()) {
+
+                List<OrdemServico> ordemCorretiva = dao.consultarCorretiva(placa, "Corretiva", "Aberto");
+
+                if (ordemCorretiva.isEmpty()) {
+                    lblConsultarOSAber.setText("Nenhum cadastro encontrado com a descrição fornecida.");
+                } else {
+                    DefaultTableModel model = new DefaultTableModel();
+                    model.addColumn("DATA");
+                    model.addColumn("CÓD. O.S. CORRET.");
+                    model.addColumn("DESCRIÇÃO DOS PRODUTOS");
+
+                    for (OrdemServico ordem : ordemCorretiva) {
+                        String produto = ordem.getProdutoCorretiva();
+                        if (produto.endsWith(",")) {
+                            produto = produto.substring(0, produto.length() - 1);
+                        }
+                        String[] produtos = produto.split(",");
+                        int[] numberProduto = Arrays.stream(produtos).mapToInt(Integer::parseInt).toArray();
+
+                        for (int idProduto : numberProduto) {
+                            String descricao = dao.descricaoProduto(idProduto);
+                            model.addRow(new Object[]{
+                                ordem.getDataCheck().format(formatoEntradaBrasileiro),
+                                ordem.getId(),
+                                descricao
+                            });
+                        }
+                        lblConsultarOSAber.setText("");
+                        tblOSCorret.setModel(model);
+                    }
+                }
+
+            }
+        }
+
+
+    }//GEN-LAST:event_btnConsultarOSActionPerformed
+
+    private void btnLimparOSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparOSActionPerformed
+        limparCampos();
+    }//GEN-LAST:event_btnLimparOSActionPerformed
+
+    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
+        new telaInicial().setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btnVoltarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -284,4 +418,5 @@ public class telaConsultarOSAberta extends javax.swing.JFrame {
     private javax.swing.JLabel telaConsultarOSAberta;
     private app.bolivia.swing.JCTextField txtPlacaOS;
     // End of variables declaration//GEN-END:variables
+
 }

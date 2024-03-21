@@ -367,6 +367,8 @@ public class telaAgendamento extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLimparAgendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparAgendaActionPerformed
+        txtCodOSCorret.setText("");
+        txtCodOSPrevent.setText("");
         jdcDataAgendamento.setDate(null);
         lblAgendarVeiculo.setText("");
     }//GEN-LAST:event_btnLimparAgendaActionPerformed
@@ -389,12 +391,16 @@ public class telaAgendamento extends javax.swing.JFrame {
                 lblConsultarAgendamento.setText("Não há horário agendado para esse veículo.");
             } else {
                 DefaultTableModel model = new DefaultTableModel();
+                model.addColumn("CÓD O.S. PREV.");    
+                model.addColumn("CÓD O.S. CORR.");                 
                 model.addColumn("Data");                
                 model.addColumn("Horario");
                 model.addColumn("Box");
 
                 for (Agenda agenda : agendaEncontrada) {
                     model.addRow(new Object[]{
+                        agenda.getOsPreventiva(),
+                        agenda.getOsCorretiva(),
                         agenda.getData().format(formatoEntradaBrasileiro),
                         agenda.getHorario(),
                         agenda.getBox()
@@ -408,6 +414,7 @@ public class telaAgendamento extends javax.swing.JFrame {
     }//GEN-LAST:event_btnConsultarAgendamentoActionPerformed
 
     private void btnLimparAgendamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparAgendamentoActionPerformed
+        lblConsultarAgendamento.setText("");
         DefaultTableModel model = (DefaultTableModel) tblConsAgendamento.getModel();
         model.setRowCount(0);        
     }//GEN-LAST:event_btnLimparAgendamentoActionPerformed
@@ -469,20 +476,48 @@ public class telaAgendamento extends javax.swing.JFrame {
             //Se a vaga não estiver disponivel ou não tiver agenda nesse dia vai dar esse erro.
             lblAgendarVeiculo.setText("Não é possível agendar nessa data e horário.");
 
-        } else {
+        }else if (txtCodOSCorret.getText().isEmpty() && txtCodOSPrevent.getText().isEmpty()){
+            lblAgendarVeiculo.setText("Não é possivel fazer agendamento do veiculo sem uma OS.");        
+        }else {
 
             LocalDate localDate = jdcDataAgendamento.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             agenda.setData(localDate);
             agenda.setHorario(cboHorario.getSelectedItem().toString());
             agenda.setBox(Integer.parseInt(cboBox.getSelectedItem().toString()));
             agenda.setPlaca(cboPlacaAgendamento.getSelectedItem().toString());
+        if(txtCodOSCorret.getText().isEmpty() && !txtCodOSPrevent.getText().isEmpty()) {
+                
+            agenda.setOsPreventiva(Integer.parseInt(txtCodOSPrevent.getText()));
 
-            boolean status = dao.agendarVeiculo(agenda);
+            boolean status = dao.agendarVeiculoPreventiva(agenda);
             if (status) {
                 lblAgendarVeiculo.setText("Veículo foi agendado com sucesso!");
             } else {
                 lblAgendarVeiculo.setText("Veículo não foi agendado.");
             }
+        
+        }else if(!txtCodOSCorret.getText().isEmpty() && txtCodOSPrevent.getText().isEmpty()){
+            agenda.setOsCorretiva(Integer.parseInt(txtCodOSCorret.getText()));
+
+            boolean status = dao.agendarVeiculoCorretiva(agenda);
+            if (status) {
+                lblAgendarVeiculo.setText("Veículo foi agendado com sucesso!");
+            } else {
+                lblAgendarVeiculo.setText("Veículo não foi agendado.");
+            }            
+        }else{
+            agenda.setOsCorretiva(Integer.parseInt(txtCodOSCorret.getText()));
+            agenda.setOsPreventiva(Integer.parseInt(txtCodOSPrevent.getText()));
+
+            boolean status = dao.agendarVeiculoCorretivaPreventiva(agenda);
+            if (status) {
+                lblAgendarVeiculo.setText("Veículo foi agendado com sucesso!");
+            } else {
+                lblAgendarVeiculo.setText("Veículo não foi agendado.");
+            }
+        
+        }   
+
         }
     }//GEN-LAST:event_btnConsultarAgendaActionPerformed
 

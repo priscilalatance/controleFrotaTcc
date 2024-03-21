@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package config;
 
 import java.sql.Connection;
@@ -25,6 +20,7 @@ public class PlanoItemManutencaoDao {
     PreparedStatement st;
 
     public int incluirItemAoKit(PlanoItemManutencao plano) {
+        Connection cn = con.conexao();
         int status;
         try {
 
@@ -37,14 +33,18 @@ public class PlanoItemManutencaoDao {
             st.setInt(6, plano.getIdCodigo());
 
             status = st.executeUpdate();
+            con.desconectar(cn);
             return status;
         } catch (SQLException ex) {
+            con.desconectar(cn);
             System.out.println(ex.getErrorCode());
             return ex.getErrorCode();
         }
     }
 
     public Boolean excluir(String modelo, String motor, Integer km, Integer anoModelo, Integer anoFabricacao, Integer idCodigo) {
+        Connection cn = con.conexao();
+        int value = 0;
         try {
             st = cn.prepareStatement("SELECT codigo_Item FROM plano_item WHERE modelo_kit = ? AND motor_kit = ? AND km_kit = ? "
                     + "AND anoModelo_kit = ? AND anoFabricacao_kit = ? AND codigo_Item = ?");
@@ -67,19 +67,21 @@ public class PlanoItemManutencaoDao {
                 st.setInt(5, anoFabricacao);
                 st.setInt(6, idCodigo);
                 st.executeUpdate();
-                return true;
 
-            } else {
-                JOptionPane.showMessageDialog(null, "Item não existe para ser excluido");
+                value = 1;
+
             }
-            return false;
+            con.desconectar(cn);
+            return value > 0;
+
         } catch (SQLException ex) {
+            con.desconectar(cn);
             return false;
         }
     }
 
     public List<CadastroItem> consultarPorItem(String modelo, String motor, Integer km, Integer anoModelo, Integer anoFabricacao) {
-
+        Connection cn = con.conexao();
         List<CadastroItem> itemEncontrado = new ArrayList<>();
 
         ResultSet rs = null;
@@ -131,35 +133,36 @@ public class PlanoItemManutencaoDao {
                 ex.printStackTrace();
             }
         }
+        con.desconectar(cn);
         return itemEncontrado;
 
     }
 
-    public int NoEqualsVeiculoItem( String modelo, String motor, int km, int anoModelo, int anoFabricacao) {
+    public int NoEqualsVeiculoItem(String modelo, String motor, int anoModelo, int anoFabricacao) {
+        Connection cn = con.conexao();
         int value = 0;
         try {
-            st = cn.prepareStatement("SELECT * FROM veiculo WHERE marca = ?"
-                    + " AND modelo  = ? AND motor = ? AND kmAtual = ? AND anoModelo  = ? AND  anoFabricacao  = ?");
+            st = cn.prepareStatement("SELECT * FROM veiculo WHERE modelo  = ? AND motor = ? AND anoModelo  = ? AND  anoFabricacao  = ?");
             st.setString(1, modelo);
             st.setString(2, motor);
-            st.setInt(3, km);
-            st.setInt(4, anoModelo);
-            st.setInt(5, anoFabricacao);
-            
+            st.setInt(3, anoModelo);
+            st.setInt(4, anoFabricacao);
+
             ResultSet rs = st.executeQuery();
-            if(rs.first()) {
+            if (rs.first()) {
                 value = 1;
-            } 
+            }
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode());
         }
-        
+        con.desconectar(cn);
         return value;
 
     }
 
     public int NoEqualsKitItem(String modelo, String motor, int km, int anoModelo, int anoFabricacao) {
-        int value = 0;        
+        Connection cn = con.conexao();
+        int value = 0;
         try {
             st = cn.prepareStatement("SELECT * FROM planomanutencao WHERE modelo  = ?"
                     + " AND motor = ? AND kmManutencao = ? AND anoModelo  = ? AND  anoFabricacao  = ?");
@@ -172,12 +175,13 @@ public class PlanoItemManutencaoDao {
 
             ResultSet rs = st.executeQuery();
 
-            if(rs.first()) {
+            if (rs.first()) {
                 value = 1;
             }
         } catch (SQLException ex) {
             System.out.println(ex.getErrorCode());
         }
+        con.desconectar(cn);
         return value;
     }
 }

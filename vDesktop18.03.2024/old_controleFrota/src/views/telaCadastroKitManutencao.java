@@ -1,24 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package views;
 
 import config.Conectar;
-import config.ConexaoPadrao;
 import config.PlanoItemManutencao;
 import config.PlanoItemManutencaoDao;
 import config.PlanoManutencao;
 import config.PlanoManutencaoDao;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -28,7 +18,6 @@ public class telaCadastroKitManutencao extends javax.swing.JFrame {
 
     //Criando a conexão com o banco
     Conectar con = new Conectar();
-    Connection cn = con.conexao();
 
     public telaCadastroKitManutencao() {
         this.con = new Conectar();
@@ -334,7 +323,7 @@ public class telaCadastroKitManutencao extends javax.swing.JFrame {
             lblCadastrarProd.setText("Está vazio o código do produto.");
 
         } else if (dao.NoEqualsVeiculoItem(cboModeloPlano.getSelectedItem().toString(), cboMotorPlano.getSelectedItem().toString(),
-                (Integer.parseInt(cboKmManutPlano.getSelectedItem().toString())), (Integer.parseInt(cboAnoModPlano.getSelectedItem().toString())),
+                 (Integer.parseInt(cboAnoModPlano.getSelectedItem().toString())),
                 (Integer.parseInt(cboAnoFabriPlano.getSelectedItem().toString()))) == 0) {
 
             lblCadastrarProd.setText("Não existe veiculo cadastrado para esse plano de manutenção.");
@@ -392,7 +381,7 @@ public class telaCadastroKitManutencao extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExcluirPlanoActionPerformed
 
     private void btnLimparCadasPlanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparCadasPlanActionPerformed
-        lblCadastrarPlan.setText("");        
+        lblCadastrarPlan.setText("");
     }//GEN-LAST:event_btnLimparCadasPlanActionPerformed
 
     private void btnLimparCadasProdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparCadasProdActionPerformed
@@ -405,6 +394,7 @@ public class telaCadastroKitManutencao extends javax.swing.JFrame {
     }//GEN-LAST:event_btnVoltarActionPerformed
 
     public void popularJComboBoxCadastrarKit() {
+        Connection cn = con.conexao();
         try {
 
             String sqlMarca = "SELECT DISTINCT marca FROM veiculo ORDER BY marca ASC";
@@ -446,7 +436,7 @@ public class telaCadastroKitManutencao extends javax.swing.JFrame {
             for (Integer km : kmManutencao) {
                 cboKmManutKit.addItem(km.toString());
             }
-
+            con.desconectar(cn);
         } catch (SQLException ex) {
             lblCadastrarPlan.setText("");
         }
@@ -454,6 +444,7 @@ public class telaCadastroKitManutencao extends javax.swing.JFrame {
     }
 
     public void popularJComboBoxCadastrarItemAoKit() {
+        Connection cn = con.conexao();
         try {
 
             String sqlModelo = "SELECT DISTINCT modelo FROM veiculo ORDER BY modelo ASC";
@@ -488,7 +479,7 @@ public class telaCadastroKitManutencao extends javax.swing.JFrame {
             for (Integer km : kmManutencao) {
                 cboKmManutPlano.addItem(km.toString());
             }
-
+            con.desconectar(cn);
         } catch (SQLException ex) {
             lblCadastrarProd.setText("Erro de banco.");
         }
