@@ -13,13 +13,14 @@ if ($conn->connect_error) {
 }
 
 // Query para obter todas as peças universais
-$sql = "SELECT descricaoItem FROM cadastro_item WHERE pecaUniversal = 1";
+$sql = "SELECT idCodigo, descricaoItem FROM cadastro_produto WHERE pecaUniversal = 1";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     // Adiciona cada descrição de peça à lista 'pecasUniversais'
     while ($row = $result->fetch_assoc()) {
-        $pecasUniversais[] = $row['descricaoItem'];
+        //$pecasUniversais[] = $row['idCodigo'];
+        $pecasUniversais[] = 'Cod ' . $row['idCodigo'] . ' - ' . $row['descricaoItem'];
     }
 } else {
     $pecasUniversais[] = "Nenhuma peça universal encontrada.";

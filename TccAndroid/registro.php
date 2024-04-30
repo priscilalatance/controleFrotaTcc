@@ -2,9 +2,9 @@
 
 require "conexao.php";
 
-$re = "5123";
-$email = "vinicius.hque@gmail.com";
-$senha = "123456";
+//$re = "5123";
+//$email = "vinicius.hque@gmail.com";
+//$senha = "123456";
 
 $sql_querry = "insert into usuario values ('$re', '$email', '$senha')";
 
