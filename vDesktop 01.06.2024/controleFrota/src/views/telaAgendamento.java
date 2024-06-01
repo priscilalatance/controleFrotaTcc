@@ -176,7 +176,7 @@ public class telaAgendamento extends javax.swing.JInternalFrame {
                 btnConsultarAgendaActionPerformed(evt);
             }
         });
-        jPanel1.add(btnConsultarAgenda, new org.netbeans.lib.awtextra.AbsoluteConstraints(1050, 400, 40, 40));
+        jPanel1.add(btnConsultarAgenda, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 400, 40, 40));
 
         btnExcluirAgenda.setContentAreaFilled(false);
         btnExcluirAgenda.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -471,8 +471,7 @@ public class telaAgendamento extends javax.swing.JInternalFrame {
         } else if(!txtCodOSCorret.getText().isEmpty() && dao.noEqualsPlacaOS(cboPlacaAgendamento.getSelectedItem().toString(),(Integer.parseInt(txtCodOSCorret.getText()))) == 0){
             lblAgendarVeiculo.setText("A placa do veiculo deve ser igual da OS Corretiva.");        
         
-        }else if(!txtCodOSPrevent.getText().isEmpty() && dao.noEqualsPlacaOS(cboPlacaAgendamento.getSelectedItem().toString(),(Integer.parseInt(txtCodOSPrevent.getText()))) == 0){
-            lblAgendarVeiculo.setText("Não é possivel fazer agendamento sem uma OS.");                
+        }else if(!txtCodOSPrevent.getText().isEmpty() && dao.noEqualsPlacaOS(cboPlacaAgendamento.getSelectedItem().toString(),(Integer.parseInt(txtCodOSPrevent.getText()))) == 0){               
             lblAgendarVeiculo.setText("A placa do veiculo deve ser igual da OS Preventiva.");
             
         }else {

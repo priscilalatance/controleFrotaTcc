@@ -265,7 +265,7 @@ public class telaCadastroKitManutencao extends javax.swing.JInternalFrame {
                 cboMotorKit.getSelectedItem().toString(), (Integer.parseInt(cboAnoModKit.getSelectedItem().toString())),
                 (Integer.parseInt(cboAnoFabriKit.getSelectedItem().toString()))) == 0) {
 
-            lblCadastrarPlan.setText("Não existe veiculo cadastrado, devido a isso não é possivel cadastrar um plano de manutenção associado.");
+            lblCadastrarPlan.setText("Não há veículo cadastrado, então não é possível associar um plano de manutenção.");
 
         } else if (dao.equalsKit(cboMarcaKit.getSelectedItem().toString(), cboModeloKit.getSelectedItem().toString(),
                 cboMotorKit.getSelectedItem().toString(), (Integer.parseInt(cboKmManutKit.getSelectedItem().toString())),
@@ -340,7 +340,7 @@ public class telaCadastroKitManutencao extends javax.swing.JInternalFrame {
         } else if (dao.NoEqualsKitItem(cboModeloPlano.getSelectedItem().toString(), cboMotorPlano.getSelectedItem().toString(),
                 (Integer.parseInt(cboKmManutPlano.getSelectedItem().toString())), (Integer.parseInt(cboAnoModPlano.getSelectedItem().toString())),
                 (Integer.parseInt(cboAnoFabriPlano.getSelectedItem().toString()))) == 0) {
-            lblCadastrarProd.setText("Não existe esse plano de manutenção cadastrado, então não é possivel incluir produtos.");
+            lblCadastrarProd.setText("Este plano de manutenção não existe, então não é possível incluir produto.");
         } else {
             Plano_Produto produto = new Plano_Produto();
             PlanoManutencao plano = new PlanoManutencao();
