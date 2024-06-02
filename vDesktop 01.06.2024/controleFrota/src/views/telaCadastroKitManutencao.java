@@ -73,27 +73,27 @@ public class telaCadastroKitManutencao extends javax.swing.JInternalFrame {
 
         cboMarcaKit.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         cboMarcaKit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(cboMarcaKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 140, 230, 40));
+        jPanel1.add(cboMarcaKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 190, 230, 40));
 
         cboModeloKit.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         cboModeloKit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(cboModeloKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 140, 240, 40));
+        jPanel1.add(cboModeloKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 190, 240, 40));
 
         cboMotorKit.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         cboMotorKit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(cboMotorKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 140, 230, 40));
+        jPanel1.add(cboMotorKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 190, 230, 40));
 
         cboKmManutKit.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         cboKmManutKit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(cboKmManutKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 220, 160, 40));
+        jPanel1.add(cboKmManutKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 270, 160, 40));
 
         cboAnoModKit.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         cboAnoModKit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(cboAnoModKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 220, 150, 40));
+        jPanel1.add(cboAnoModKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 270, 150, 40));
 
         cboAnoFabriKit.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         cboAnoFabriKit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(cboAnoFabriKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 220, 160, 40));
+        jPanel1.add(cboAnoFabriKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 270, 160, 40));
 
         txtCodItemPlano.setBorder(null);
         txtCodItemPlano.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
@@ -133,7 +133,7 @@ public class telaCadastroKitManutencao extends javax.swing.JInternalFrame {
                 btnIncluirKitActionPerformed(evt);
             }
         });
-        jPanel1.add(btnIncluirKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(910, 220, 40, 40));
+        jPanel1.add(btnIncluirKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(910, 270, 40, 40));
 
         btnAlterarKit.setContentAreaFilled(false);
         btnAlterarKit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -142,7 +142,7 @@ public class telaCadastroKitManutencao extends javax.swing.JInternalFrame {
                 btnAlterarKitActionPerformed(evt);
             }
         });
-        jPanel1.add(btnAlterarKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 220, 40, 40));
+        jPanel1.add(btnAlterarKit, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 270, 40, 40));
 
         btnIncluirPlano.setContentAreaFilled(false);
         btnIncluirPlano.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -169,7 +169,7 @@ public class telaCadastroKitManutencao extends javax.swing.JInternalFrame {
                 btnLimparCadasPlanActionPerformed(evt);
             }
         });
-        jPanel1.add(btnLimparCadasPlan, new org.netbeans.lib.awtextra.AbsoluteConstraints(1050, 220, 40, 40));
+        jPanel1.add(btnLimparCadasPlan, new org.netbeans.lib.awtextra.AbsoluteConstraints(1050, 270, 40, 40));
 
         btnLimparCadasProd.setContentAreaFilled(false);
         btnLimparCadasProd.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -191,7 +191,7 @@ public class telaCadastroKitManutencao extends javax.swing.JInternalFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        lblCadastrarPlan.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        lblCadastrarPlan.setFont(new java.awt.Font("Arial", 1, 15)); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -204,15 +204,15 @@ public class telaCadastroKitManutencao extends javax.swing.JInternalFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(lblCadastrarPlan, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(lblCadastrarPlan, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 12, Short.MAX_VALUE))
         );
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 280, 760, 100));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 340, 760, 50));
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        lblCadastrarProd.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        lblCadastrarProd.setFont(new java.awt.Font("Arial", 1, 15)); // NOI18N
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -226,11 +226,11 @@ public class telaCadastroKitManutencao extends javax.swing.JInternalFrame {
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(lblCadastrarProd, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
+                .addComponent(lblCadastrarProd, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 720, 760, 100));
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 720, 760, 50));
 
         telaCadastroKitManutencao.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         telaCadastroKitManutencao.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagem/TelaCadastroKitManutencao.png"))); // NOI18N
