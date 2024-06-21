@@ -1,0 +1,345 @@
+package com.br.tccandroid;
+
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import android.Manifest;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.PopupMenu;
+import android.widget.Toast;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.Text;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+public class telaOcrKm extends AppCompatActivity {
+
+    private MaterialButton inputImageBtn;
+    private MaterialButton recognizedTextBtn;
+    private ShapeableImageView imageIv;
+    private EditText recognizedTextEt;
+    private EditText editTextOdometro;
+
+    private static final String TAG = "MAIN_TAG";
+    private Uri imageUri = null;
+
+    private static final int CAMERA_REQUEST_CODE = 100;
+    private static final int STORAGE_REQUEST_CODE = 101;
+    private String[] cameraPermissions;
+    private String[] storagePermissions;
+
+    private ProgressDialog progressDialog;
+    private TextRecognizer textRecognizer;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tela_ocr_km);
+
+        // Recuperar o conteúdo do EditText da atividade anterior
+        String conteudoRecebido = getIntent().getStringExtra("CONTEUDO_EDIT_TEXT");
+
+        // Exibir o conteúdo em um TextView (ou faça o que precisar com o conteúdo)
+        EditText editText = findViewById(R.id.recognizedTextEt);
+        editText.setText(conteudoRecebido);
+
+        MaterialButton btnConfirmarPlaca = findViewById(R.id.btnConfirmarPlaca);
+
+        btnConfirmarPlaca.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Pegar o conteúdo do primeiro EditText
+                String conteudoEditTextOdometro = editTextOdometro.getText().toString();
+
+                // Pegar o conteúdo do segundo EditText
+                String conteudoEditTextPlaca = recognizedTextEt.getText().toString();
+
+                // Criar uma intenção (intent) para iniciar a telaChecklist
+                Intent intent = new Intent(telaOcrKm.this, telaChecklist.class);
+
+                // Passar os conteúdos dos EditTexts para a próxima atividade usando o Bundle
+                intent.putExtra("CONTEUDO_EDIT_TEXT_ODOMETRO", conteudoEditTextOdometro);
+                intent.putExtra("CONTEUDO_EDIT_TEXT_PLACA", conteudoEditTextPlaca);
+
+                // Iniciar a nova atividade
+                startActivity(intent);
+
+                // URL para realizar a operação de atualização no banco de dados
+                String updateUrl = "http://192.168.0.111/TccAndroid/atualizar_km_veiculo.php";
+
+                // Construir a URL completa com os parâmetros necessários
+                String fullUrl = updateUrl + "?odometro=" + conteudoEditTextOdometro + "&placa=" + conteudoEditTextPlaca;
+
+                // Chamar o método para fazer a requisição HTTP em uma thread separada
+                new FazerRequisicaoHttpTask().execute(fullUrl);
+            }
+        });
+
+        inputImageBtn = findViewById(R.id.inputImageBtn);
+        recognizedTextBtn = findViewById(R.id.recognizedTextBtn);
+        imageIv = findViewById(R.id.imageIv);
+        recognizedTextEt = findViewById(R.id.recognizedTextEt);
+        editTextOdometro = findViewById(R.id.editTextOdometro);
+
+        cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Espere Por Favor");
+        progressDialog.setCanceledOnTouchOutside(false);
+
+        textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+
+        inputImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showInputImageDialog();
+            }
+        });
+
+        recognizedTextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (imageUri == null) {
+                    Toast.makeText(telaOcrKm.this, "Tire a foto primeiro...", Toast.LENGTH_SHORT).show();
+                } else {
+                    recognizedTextFromImage();
+                }
+            }
+        });
+    }
+
+    private void recognizedTextFromImage() {
+        progressDialog.setMessage("Preparando imagem...");
+        progressDialog.show();
+
+        try {
+            InputImage inputImage = InputImage.fromFilePath(this, imageUri);
+            progressDialog.setMessage("Reconhecendo placa");
+
+            Task<Text> textTaskResult = textRecognizer.process(inputImage)
+                    .addOnSuccessListener(new OnSuccessListener<Text>() {
+                        @Override
+                        public void onSuccess(Text text) {
+                            progressDialog.dismiss();
+                            String recognizedText = text.getText();
+                            Log.d(TAG, "onSuccess: recognizedText: " + recognizedText);
+                            editTextOdometro.setText(recognizedText);
+
+                            String conteudoEditTextOdometro = recognizedText;
+                            String conteudoEditTextPlaca = recognizedTextEt.getText().toString();
+                            String updateUrl = "http://192.168.0.111/TccAndroid/atualizar_km_veiculo.php";
+                            String fullUrl = updateUrl + "?odometro=" + conteudoEditTextOdometro + "&placa=" + conteudoEditTextPlaca;
+                            new FazerRequisicaoHttpTask().execute(fullUrl);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Log.d(TAG, "onFailure: ", e);
+                            Toast.makeText(telaOcrKm.this, "Falha devido a " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } catch (Exception e) {
+            progressDialog.dismiss();
+            Log.e(TAG, "recognizedTextFromImage: ", e);
+            Toast.makeText(this, "Falha devido a " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showInputImageDialog() {
+        PopupMenu popupMenu = new PopupMenu(this, inputImageBtn);
+        popupMenu.getMenu().add(Menu.NONE, 1, 1, "CAMERA");
+        popupMenu.getMenu().add(Menu.NONE, 2, 2, "GALERIA");
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == 1) {
+                    if (checkCameraPermission()) {
+                        pickImageCamera();
+                    } else {
+                        requestCameraPermission();
+                    }
+                } else if (id == 2) {
+                    if (checkStoragePermission()) {
+                        pickImageGallery();
+                    } else {
+                        requestStoragePermission();
+                    }
+                }
+                return true;
+            }
+        });
+    }
+
+    private void pickImageGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        galleryActivityResultLauncher.launch(intent);
+    }
+
+    private ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        imageUri = data.getData();
+                        imageIv.setImageURI(imageUri);
+                    } else {
+                        Toast.makeText(telaOcrKm.this, "Cancelar...", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
+
+    private void pickImageCamera() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "Título Exemplo");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Descrição Exemplo");
+        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        cameraActivityResultLauncher.launch(intent);
+    }
+
+    private ActivityResultLauncher<Intent> cameraActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        imageIv.setImageURI(imageUri);
+                    } else {
+                        Toast.makeText(telaOcrKm.this, "Cancelado", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
+
+    private boolean checkStoragePermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+    }
+
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(this, storagePermissions, STORAGE_REQUEST_CODE);
+    }
+
+    private boolean checkCameraPermission() {
+        boolean cameraResult = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
+        boolean storageResult = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        return cameraResult && storageResult;
+    }
+
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(this, cameraPermissions, CAMERA_REQUEST_CODE);
+    }
+
+    private class FazerRequisicaoHttpTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String urlString = params[0];
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                try {
+                    InputStream in = urlConnection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    return result.toString();
+                } finally {
+                    urlConnection.disconnect();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            super.onPostExecute(response);
+            if (response != null) {
+                // Sucesso ao atualizar o banco de dados
+                Log.d(TAG, "Resposta do servidor: " + response);
+            } else {
+                // Falha ao fazer a requisição HTTP
+                Log.e(TAG, "Falha ao fazer a requisição HTTP");
+                Toast.makeText(telaOcrKm.this, "Falha ao fazer a requisição HTTP", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case CAMERA_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean storageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (cameraAccepted && storageAccepted) {
+                        pickImageCamera();
+                    } else {
+                        Toast.makeText(this, "Permissões de Camera e Armazenamento necessárias", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(this, "Cancelado", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            case STORAGE_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    boolean storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    if (storageAccepted) {
+                        pickImageGallery();
+                    } else {
+                        Toast.makeText(this, "Permissões de Armazenamento necessárias", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+            }
+        }
+    }
+}
