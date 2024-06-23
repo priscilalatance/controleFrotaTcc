@@ -88,9 +88,9 @@ public class Plano_ProdutoDao {
                 st.setInt(1, idPlano);
                 st.setInt(2, idCodigo);
 
-                st.executeUpdate();
+                value = st.executeUpdate();
 
-                value = 1;
+
 
             }
             con.desconectar(cn);
